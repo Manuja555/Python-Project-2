@@ -228,6 +228,7 @@ def main_game():
     
     game_over = False
     running = True
+
     
     # Sprite groups
     all_sprites = pygame.sprite.Group()
@@ -282,7 +283,31 @@ def main_game():
                 powerup = Powerup()
                 all_sprites.add(powerup)
                 powerups.add(powerup)
+
+        # Check player-powerup collisions
+        hits = pygame.sprite.spritecollide(player, powerups, True)
+        for hit in hits:
+            if hit.type == 'shield':
+                player.shield += 20
+                if player.shield > 100:
+                    player.shield = 100
+            if hit.type == 'power':
+                player.powerup()
         
+        
+            
+        # Draw / render
+        screen.fill(BLACK)
+        all_sprites.draw(screen)
+        
+        # Draw UI
+        draw_text(screen, str(score), 18, SCREEN_WIDTH / 2, 10)
+        draw_shield_bar(screen, 5, 5, player.shield)
+        draw_lives(screen, SCREEN_WIDTH - 100, 5, player.lives, player_mini_img)
+        
+        # Flip the display
+        pygame.display.flip()
+
         # Check player-enemy collisions
         hits = pygame.sprite.spritecollide(player, enemies, True)
         for hit in hits:
@@ -298,31 +323,8 @@ def main_game():
                 player.hide()
                 if player.lives == 0:
                     game_over = True
+                    pygame.quit()
         
-        # Check player-powerup collisions
-        hits = pygame.sprite.spritecollide(player, powerups, True)
-        for hit in hits:
-            if hit.type == 'shield':
-                player.shield += 20
-                if player.shield > 100:
-                    player.shield = 100
-            if hit.type == 'power':
-                player.powerup()
-        
-        if game_over:
-            pass
-            
-        # Draw / render
-        screen.fill(BLACK)
-        all_sprites.draw(screen)
-        
-        # Draw UI
-        draw_text(screen, str(score), 18, SCREEN_WIDTH / 2, 10)
-        draw_shield_bar(screen, 5, 5, player.shield)
-        draw_lives(screen, SCREEN_WIDTH - 100, 5, player.lives, player_mini_img)
-        
-        # Flip the display
-        pygame.display.flip()
     
     pygame.quit()
 
